@@ -10,7 +10,7 @@ from django.utils.hashcompat import sha_constructor
 from django.contrib.sites.models import Site, RequestSite
 from django.core.urlresolvers import reverse
 
-from registration.compat import AUTH_USER_MODEL, get_user_model
+from invitation.compat import AUTH_USER_MODEL, get_user_model
 
 import app_settings
 import signals

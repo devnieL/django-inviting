@@ -1,5 +1,7 @@
 from django.db.models.signals import post_syncdb
-from django.contrib.auth.models import User
+
+from invitation.compat import AUTH_USER_MODEL, get_user_model
+
 from invitation import models
 
 
@@ -9,7 +11,7 @@ def create_stats_for_existing_users(sender, **kwargs):
 
     """
     count = 0
-    for user in User.objects.filter(invitation_stats__isnull=True):
+    for user in get_user_model().objects.filter(invitation_stats__isnull=True):
         models.InvitationStats.objects.create(user=user)
         count += 1
     if count > 0:
