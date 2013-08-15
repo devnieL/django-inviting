@@ -6,11 +6,11 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from django.utils.hashcompat import sha_constructor
-from django.contrib.auth.models import User
+
 from django.contrib.sites.models import Site, RequestSite
 from django.core.urlresolvers import reverse
 
-
+from registration.compat import AUTH_USER_MODEL, get_user_model
 
 import app_settings
 import signals
@@ -110,7 +110,7 @@ class InvitationManager(models.Manager):
 from django.utils.timezone import utc
 
 class Invitation(models.Model):
-	user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='invitations')
+	user = models.ForeignKey(AUTH_USER_MODEL, related_name='invitations')
 	email = models.EmailField(_(u'e-mail'))
 	key = models.CharField(_(u'invitation key'), max_length=40, unique=True)
 	date_invited = models.DateTimeField(_(u'date invited'),
@@ -261,7 +261,7 @@ class InvitationStatsManager(models.Manager):
 class InvitationStats(models.Model):
 	"""Store invitation statistics for ``user``.
 	"""
-	user = models.OneToOneField(settings.AUTH_USER_MODEL,
+	user = models.OneToOneField(AUTH_USER_MODEL,
 								related_name='invitation_stats')
 	available = models.IntegerField(_(u'available invitations'),
 									default=app_settings.INITIAL_INVITATIONS)
@@ -345,5 +345,5 @@ def create_stats(sender, instance, created, raw, **kwargs):
 	if created and not raw:
 		InvitationStats.objects.create(user=instance)
 models.signals.post_save.connect(create_stats,
-								 sender=settings.AUTH_USER_MODEL,
+								 sender=AUTH_USER_MODEL,
 								 dispatch_uid='invitation.models.create_stats')
